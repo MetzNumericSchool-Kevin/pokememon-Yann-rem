@@ -20,7 +20,7 @@ class Game {
     }
   }
 
-  initializedGrid(pairsCount = 6) {
+  initializeGrid(pairsCount = 6) {
     if (this.pokemons > 0) {
       const selectedPokemons = shuffleArray(this.pokemons).slice(0, pairsCount);
       const pokemonPairs = [...selectedPokemons, ...selectedPokemons];
