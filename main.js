@@ -78,6 +78,7 @@ class Game {
         card.box.appendChild(pokeballImg);
       });
 
+      this.updateCaptured();
       this.revealedCards = [];
     } else {
       setTimeout(() => {
@@ -88,6 +89,13 @@ class Game {
         this.revealedCards = [];
       }, 2000);
     }
+  }
+
+  updateCaptured(pokemon) {
+    const list = document.querySelector(".liste_pokemons_captures");
+    const pokemonImg = document.createElement("img");
+    pokemonImg.src = pokemon.sprite;
+    list.appendChild(pokemonImg);
   }
 }
 
