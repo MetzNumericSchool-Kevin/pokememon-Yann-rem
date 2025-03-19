@@ -7,7 +7,7 @@ class Game {
     this.captured = [];
     this.revealedCards = [];
     this.moves = 0;
-    this.highScore = localStorage.getItem("highScore") || 99;
+    this.highScore = localStorage.getItem("highScore") || 9999;
   }
 
   async fetchPokemons() {
@@ -88,6 +88,23 @@ class Game {
         card2.box.querySelector(".bush").style.display = "block";
         this.revealedCards = [];
       }, 2000);
+    }
+  }
+
+  updateStats() {
+    document.querySelector("#stat_nombre_de_coups").textContent = this.moves;
+    document.querySelector("#stat_record_nombre_de_coups").textContent =
+      this.highScore === 9999 ? "N/A" : this.highScore;
+
+    if (this.captured.length === this.grid.length) {
+      if (this.moves < this.highScore) {
+        this.highScore = this.moves;
+        localStorage.setItem("highScore", this.highScore);
+        document.querySelector("#stat_record_nombre_de_coups").textContent =
+          this.highScore;
+      }
+
+      document.querySelector("#rejouer").style.display = "block";
     }
   }
 
