@@ -1,4 +1,4 @@
-import { shuffleArray } from "../../Users/remyy/OneDrive/Pièces jointes/pokemon/utils";
+import { shuffleArray } from "./utils";
 
 class Game {
   constructor() {
@@ -175,8 +175,37 @@ class Game {
     document.querySelector("#liste_pokemons_captures").innerHTML = "";
   }
 
+  setupDynamicGrid(pairsCount) {
+    const grid = document.querySelector("#grille_de_jeu");
+    grid.innerHTML = "";
+    const template = document.querySelector("#template-boite");
+    const totalCards = pairsCount * 2;
+
+    for (let i = 0; i < totalCards; i++) {
+      const box = template.content.cloneNode(true);
+      box.querySelector(".box").setAttribute("data-index", i);
+      grid.appendChild(box);
+    }
+
+    this.initializeGrid(pairsCount);
+    this.setupEvents();
+    this.updateStats();
+  }
+
   async startGame() {
     await this.fetchPokemons();
+
+    if (!this.loadGameState()) {
+      this.setupDynamicGrid(6);
+    }
+
+    const form = document.querySelector("#taille-grille");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const pairsCount = parseInt(document.querySelector("#paires").value);
+      this.setupDynamicGrid(pairsCount);
+    });
 
     document
       .querySelector("#rejouer")
