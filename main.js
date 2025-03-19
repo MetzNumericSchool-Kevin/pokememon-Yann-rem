@@ -157,9 +157,25 @@ class Game {
 
     return false;
   }
+
+  restartGame() {
+    this.moves = 0;
+    this.captured = [];
+    this.revealedCards = [];
+
+    document.querySelectorAll("#grille_de_jeu .box").forEach((box) => {
+      const bush = box.querySelector(".bush");
+      const pokeball = box.querySelector(".pokeball");
+      if (pokeball) pokeball.remove();
+      bush.style.display = "block";
+    });
+
+    this.updateStats();
+    document.querySelector("#rejouer").style.display = "none";
+    document.querySelector("#liste_pokemons_captures").innerHTML = "";
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const game = new Game();
-  game.startGame();
 });
