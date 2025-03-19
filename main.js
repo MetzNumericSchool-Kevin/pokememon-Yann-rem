@@ -174,8 +174,17 @@ class Game {
     document.querySelector("#rejouer").style.display = "none";
     document.querySelector("#liste_pokemons_captures").innerHTML = "";
   }
+
+  async startGame() {
+    await this.fetchPokemons();
+
+    document
+      .querySelector("#rejouer")
+      .addEventListener("click", () => this.restartGame());
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const game = new Game();
+  game.startGame();
 });
