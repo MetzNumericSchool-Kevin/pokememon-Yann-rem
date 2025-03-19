@@ -1,3 +1,5 @@
+import { shuffleArray } from "../../Users/remyy/OneDrive/Pièces jointes/pokemon/utils";
+
 class Game {
   constructor() {
     this.grid = [];
@@ -15,6 +17,14 @@ class Game {
     } catch (error) {
       console.error("Erreur lors du chargement des données:", error);
       return [];
+    }
+  }
+
+  initializedGrid(pairsCount = 6) {
+    if (this.pokemons > 0) {
+      const selectedPokemons = shuffleArray(this.pokemons).slice(0, pairsCount);
+      const pokemonPairs = [...selectedPokemons, ...selectedPokemons];
+      this.grid = shuffleArray(pokemonPairs);
     }
   }
 }
