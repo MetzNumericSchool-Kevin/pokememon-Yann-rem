@@ -1,5 +1,6 @@
 .box {
   position: relative;
+  aspect-ratio: 1;
 }
 
 .box .bush {
@@ -18,15 +19,15 @@
 .box .pokemon,
 .box .pokeball {
   position: absolute;
-  top: 0;
+  top: 10%;
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translate(-50%, -50%);
   width: auto;
   height: 100%;
 }
 
 .box .pokeball {
-  height: 60%;
+  /* height: 60%; */
   top: 60%;
   transform: translate(-50%, -50%);
 }
