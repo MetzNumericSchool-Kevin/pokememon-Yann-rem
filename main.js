@@ -114,6 +114,49 @@ class Game {
     pokemonImg.src = pokemon.sprite;
     list.appendChild(pokemonImg);
   }
+
+  saveGameState() {
+    const gameState = {
+      grid: this.grid,
+      captured: this.captured,
+      moves: this.moves,
+      highScore: this.highScore,
+    };
+
+    localStorage.setItem("gameState", JSON.stringify(gameState));
+  }
+
+  loadGameState() {
+    const savedState = localStorage.getItem("gameState");
+
+    if (savedState) {
+      const { grid, captured, moves, highScore } = JSON.parse(savedState);
+      this.grid = grid;
+      this.captured = captured;
+      this.moves = moves;
+      this.highScore = highScore;
+
+      document.querySelectorAll("#grille_de_jeu .box").forEach((box, index) => {
+        const bush = box.querySelector(".bush");
+
+        if (this.captured.includes(String(index))) {
+          const pokeballImg = document.createElement("img");
+          pokeballImg.src = "./assets/pokeball.png";
+          pokeballImg.classList.add("pokeball");
+          bush.style.display = "none";
+          box.appendChild(pokeballImg);
+        } else {
+          bush.style.display = "block";
+        }
+      });
+
+      this.updateStats();
+      this.updateCapturedFromState();
+      return true;
+    }
+
+    return false;
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
