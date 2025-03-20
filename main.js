@@ -150,10 +150,25 @@ class Game {
       });
 
       this.updateStats();
+      this.updateCapturedFromState();
       return true;
     }
 
     return false;
+  }
+
+  updateCapturedFromState() {
+    const list = document.querySelector(".liste_pokmeons_captures");
+    list.innerHTML = "";
+    const capturedSprites = [
+      ...this.captured.map((index) => this.grid[index].sprite),
+    ];
+
+    capturedSprites.forEach((sprite) => {
+      const pokemonImg = document.createElement("img");
+      pokemon.src = sprite;
+      list.appendChild(pokemonImg);
+    });
   }
 
   restartGame() {
