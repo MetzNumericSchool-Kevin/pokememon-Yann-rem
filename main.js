@@ -1,4 +1,4 @@
-import { shuffleArray } from "./utils";
+import { shuffleArray } from "./utils.js";
 
 class Game {
   constructor() {
@@ -7,13 +7,13 @@ class Game {
     this.captured = [];
     this.revealedCards = [];
     this.moves = 0;
-    this.highScore = localStorage.getItem("highScore") || 9999;
+    this.highScore = localStorage.getItem("highScore") || 99999;
   }
 
   async fetchPokemons() {
     try {
-      const response = fetch("./data/pokemons.json");
-      this.pokemons = (await response).json();
+      const response = await fetch("./data/pokemon.json");
+      this.pokemons = await response.json();
     } catch (error) {
       console.error("Erreur lors du chargement des données:", error);
       return [];
@@ -21,7 +21,7 @@ class Game {
   }
 
   initializeGrid(pairsCount = 6) {
-    if (this.pokemons > 0) {
+    if (this.pokemons.length > 0) {
       const selectedPokemons = shuffleArray(this.pokemons).slice(0, pairsCount);
       const pokemonPairs = [...selectedPokemons, ...selectedPokemons];
       this.grid = shuffleArray(pokemonPairs);
@@ -29,8 +29,7 @@ class Game {
   }
 
   setupEvents() {
-    document.querySelectorAll("#grille_de_jeu .box").forEach((box, index) => {
-      box.setAttribute("data-index", index);
+    document.querySelectorAll("#grille_de_jeu .box").forEach((box) => {
       box.addEventListener("click", () => {
         const index = box.getAttribute("data-index");
         this.revealPokemon(index, box);
@@ -48,13 +47,13 @@ class Game {
     }
 
     const bush = box.querySelector(".bush");
-    const pokmeon = this.grid[index];
-    const pokmemonImg = document.createElement("img");
-    pokmemonImg.src = pokmeon.sprite;
-    pokmemonImg.classList.add("pokemon");
+    const pokemon = this.grid[index];
+    const pokemonImg = document.createElement("img");
+    pokemonImg.src = pokemon.sprite;
+    pokemonImg.classList.add("pokemon");
     bush.style.display = "none";
-    box.appendchild(pokmemonImg);
-    this.revealedCards.push({ index, box, pokmemonImg });
+    box.appendChild(pokemonImg);
+    this.revealedCards.push({ index, box, pokemonImg });
 
     if (this.revealedCards.length === 2) {
       this.moves++;
@@ -78,7 +77,7 @@ class Game {
         card.box.appendChild(pokeballImg);
       });
 
-      this.updateCaptured();
+      this.updateCaptured(pokemon1);
       this.revealedCards = [];
     } else {
       setTimeout(() => {
@@ -94,7 +93,7 @@ class Game {
   updateStats() {
     document.querySelector("#stat_nombre_de_coups").textContent = this.moves;
     document.querySelector("#stat_record_nombre_de_coups").textContent =
-      this.highScore === 9999 ? "N/A" : this.highScore;
+      this.highScore === 99999 ? "N/A" : this.highScore;
 
     if (this.captured.length === this.grid.length) {
       if (this.moves < this.highScore) {
@@ -151,7 +150,6 @@ class Game {
       });
 
       this.updateStats();
-      this.updateCapturedFromState();
       return true;
     }
 
@@ -175,7 +173,7 @@ class Game {
     document.querySelector("#liste_pokemons_captures").innerHTML = "";
   }
 
-  setupDynamicGrid(pairsCount) {
+  setupDynamicGrid(pairsCount = 6) {
     const grid = document.querySelector("#grille_de_jeu");
     grid.innerHTML = "";
     const template = document.querySelector("#template-boite");
@@ -189,23 +187,22 @@ class Game {
 
     this.initializeGrid(pairsCount);
     this.setupEvents();
-    this.updateStats();
   }
 
   async startGame() {
     await this.fetchPokemons();
 
     if (!this.loadGameState()) {
-      this.setupDynamicGrid(6);
+      this.setupDynamicGrid();
     }
 
-    const form = document.querySelector("#taille-grille");
-
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const pairsCount = parseInt(document.querySelector("#paires").value);
-      this.setupDynamicGrid(pairsCount);
-    });
+    document
+      .querySelector("#taille-grille")
+      .addEventListener("submit", (event) => {
+        event.preventDefault();
+        const pairsCount = parseInt(document.querySelector("#paires").value);
+        this.setupDynamicGrid(pairsCount);
+      });
 
     document
       .querySelector("#rejouer")
