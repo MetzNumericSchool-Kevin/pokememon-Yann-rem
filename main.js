@@ -88,6 +88,9 @@ class Game {
         this.revealedCards = [];
       }, 2000);
     }
+
+    this.updateStats();
+    this.saveGameState();
   }
 
   updateStats() {
@@ -202,6 +205,7 @@ class Game {
 
     this.initializeGrid(pairsCount);
     this.setupEvents();
+    this.updateStats();
   }
 
   async startGame() {
