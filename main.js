@@ -8,7 +8,7 @@ class Game {
     this.captured = [];
     this.revealedCards = [];
     this.moves = 0;
-    this.highScore = localStorage.getItem("highScore") || 99999;
+    this.highScore = localStorage.getItem("highScore") || 999999;
   }
 
   // Chargement des données
@@ -139,7 +139,7 @@ class Game {
   updateStats() {
     document.querySelector("#stat_nombre_de_coups").textContent = this.moves;
     document.querySelector("#stat_record_nombre_de_coups").textContent =
-      this.highScore === 99999 ? "N/A" : this.highScore;
+      this.highScore === 999999 ? "N/A" : this.highScore;
 
     if (this.captured.length === this.grid.length) {
       if (this.moves < this.highScore) {
