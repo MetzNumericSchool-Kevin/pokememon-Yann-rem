@@ -1,6 +1,7 @@
 import { shuffleArray } from "./utils.js";
 
 class Game {
+  // Initialisation de l'état du jeu
   constructor() {
     this.grid = [];
     this.pokemons = [];
@@ -10,6 +11,7 @@ class Game {
     this.highScore = localStorage.getItem("highScore") || 99999;
   }
 
+  // Chargement des données
   async fetchPokemons() {
     try {
       const response = await fetch("./data/pokemon.json");
@@ -20,6 +22,7 @@ class Game {
     }
   }
 
+  // Préparation de la grille
   initializeGrid(pairsCount = 6) {
     if (this.pokemons.length > 0) {
       const selectedPokemons = shuffleArray(this.pokemons).slice(0, pairsCount);
@@ -28,6 +31,25 @@ class Game {
     }
   }
 
+  // Création dynamique de la grille
+  setupDynamicGrid(pairsCount = 6) {
+    const grid = document.querySelector("#grille_de_jeu");
+    grid.innerHTML = "";
+    const template = document.querySelector("#template-boite");
+    const totalCards = pairsCount * 2;
+
+    for (let i = 0; i < totalCards; i++) {
+      const box = template.content.cloneNode(true);
+      box.querySelector(".box").setAttribute("data-index", i);
+      grid.appendChild(box);
+    }
+
+    this.initializeGrid(pairsCount);
+    this.setupEvents();
+    this.updateStats();
+  }
+
+  // Ajout d'événements au clic sur le boites
   setupEvents() {
     document.querySelectorAll("#grille_de_jeu .box").forEach((box) => {
       box.addEventListener("click", () => {
@@ -37,6 +59,7 @@ class Game {
     });
   }
 
+  // Révélation d'un pokemon
   revealPokemon(index, box) {
     if (
       this.revealedCards.length >= 2 ||
@@ -61,6 +84,7 @@ class Game {
     }
   }
 
+  // Vérification de la correspondance des pokémons
   checkMatch() {
     const [card1, card2] = this.revealedCards;
     const pokemon1 = this.grid[card1.index];
@@ -93,6 +117,25 @@ class Game {
     this.saveGameState();
   }
 
+  // Réinitialisation du jeu
+  restartGame() {
+    this.moves = 0;
+    this.captured = [];
+    this.revealedCards = [];
+
+    document.querySelectorAll("#grille_de_jeu .box").forEach((box) => {
+      const bush = box.querySelector(".bush");
+      const pokeball = box.querySelector(".pokeball");
+      if (pokeball) pokeball.remove();
+      bush.style.display = "block";
+    });
+
+    this.updateStats();
+    document.querySelector("#rejouer").style.display = "none";
+    document.querySelector("#liste_pokemons_captures").innerHTML = "";
+  }
+
+  // Mise à jour des statistiques
   updateStats() {
     document.querySelector("#stat_nombre_de_coups").textContent = this.moves;
     document.querySelector("#stat_record_nombre_de_coups").textContent =
@@ -110,6 +153,7 @@ class Game {
     }
   }
 
+  // Ajout d'un pokémon à la liste des pokémons capturés
   updateCaptured(pokemon) {
     const list = document.querySelector(".liste_pokemons_captures");
     const pokemonImg = document.createElement("img");
@@ -117,6 +161,22 @@ class Game {
     list.appendChild(pokemonImg);
   }
 
+  // Mise à jour de la liste des pokémons capturés à partir de l'état sauvegardé
+  updateCapturedFromState() {
+    const list = document.querySelector(".liste_pokmeons_captures");
+    list.innerHTML = "";
+    const capturedSprites = [
+      ...this.captured.map((index) => this.grid[index].sprite),
+    ];
+
+    capturedSprites.forEach((sprite) => {
+      const pokemonImg = document.createElement("img");
+      pokemon.src = sprite;
+      list.appendChild(pokemonImg);
+    });
+  }
+
+  // Sauvegarde de l'état actuel du jeu
   saveGameState() {
     const gameState = {
       grid: this.grid,
@@ -128,6 +188,7 @@ class Game {
     localStorage.setItem("gameState", JSON.stringify(gameState));
   }
 
+  // Chargement de l'état sauvegardé
   loadGameState() {
     const savedState = localStorage.getItem("gameState");
 
@@ -160,54 +221,7 @@ class Game {
     return false;
   }
 
-  updateCapturedFromState() {
-    const list = document.querySelector(".liste_pokmeons_captures");
-    list.innerHTML = "";
-    const capturedSprites = [
-      ...this.captured.map((index) => this.grid[index].sprite),
-    ];
-
-    capturedSprites.forEach((sprite) => {
-      const pokemonImg = document.createElement("img");
-      pokemon.src = sprite;
-      list.appendChild(pokemonImg);
-    });
-  }
-
-  restartGame() {
-    this.moves = 0;
-    this.captured = [];
-    this.revealedCards = [];
-
-    document.querySelectorAll("#grille_de_jeu .box").forEach((box) => {
-      const bush = box.querySelector(".bush");
-      const pokeball = box.querySelector(".pokeball");
-      if (pokeball) pokeball.remove();
-      bush.style.display = "block";
-    });
-
-    this.updateStats();
-    document.querySelector("#rejouer").style.display = "none";
-    document.querySelector("#liste_pokemons_captures").innerHTML = "";
-  }
-
-  setupDynamicGrid(pairsCount = 6) {
-    const grid = document.querySelector("#grille_de_jeu");
-    grid.innerHTML = "";
-    const template = document.querySelector("#template-boite");
-    const totalCards = pairsCount * 2;
-
-    for (let i = 0; i < totalCards; i++) {
-      const box = template.content.cloneNode(true);
-      box.querySelector(".box").setAttribute("data-index", i);
-      grid.appendChild(box);
-    }
-
-    this.initializeGrid(pairsCount);
-    this.setupEvents();
-    this.updateStats();
-  }
-
+  // Démarrage du jeu
   async startGame() {
     await this.fetchPokemons();
 
