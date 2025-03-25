@@ -1,14 +1,28 @@
 import { shuffleArray } from "./utils.js";
 
 class Game {
-  // Initialisation de l'état du jeu
   constructor() {
+    // Initialisation de l'état du jeu
     this.grid = [];
     this.pokemons = [];
     this.captured = [];
     this.revealedCards = [];
     this.moves = 0;
     this.highScore = localStorage.getItem("highScore") || 999999;
+
+    // Sélection des éléments DOM
+    this.gridElement = document.querySelector("#grille_de_jeu");
+    this.movesElement = document.querySelector("#stat_nombre_de_coups");
+    this.highScoreElement = document.querySelector(
+      "#stat_record_nombre_de_coups"
+    );
+    this.capturedListElement = document.querySelector(
+      ".liste_pokemons_captures"
+    );
+    this.replayButton = document.querySelector("#rejouer");
+    this.sizeForm = document.querySelector("#taille-grille");
+    this.pairsInput = document.querySelector("#paires");
+    this.boxTemplate = document.querySelector("#template-boite");
   }
 
   // Chargement des données
@@ -23,7 +37,7 @@ class Game {
   }
 
   // Préparation de la grille
-  initializeGrid(pairsCount = 6) {
+  initializeGrid(pairsCount) {
     if (this.pokemons.length > 0) {
       const selectedPokemons = shuffleArray(this.pokemons).slice(0, pairsCount);
       const pokemonPairs = [...selectedPokemons, ...selectedPokemons];
@@ -32,16 +46,14 @@ class Game {
   }
 
   // Création dynamique de la grille
-  setupDynamicGrid(pairsCount = 6) {
-    const grid = document.querySelector("#grille_de_jeu");
-    grid.innerHTML = "";
-    const template = document.querySelector("#template-boite");
+  setupDynamicGrid(pairsCount) {
+    this.gridElement.innerHTML = "";
     const totalCards = pairsCount * 2;
 
     for (let i = 0; i < totalCards; i++) {
-      const box = template.content.cloneNode(true);
+      const box = this.boxTemplate.content.cloneNode(true);
       box.querySelector(".box").setAttribute("data-index", i);
-      grid.appendChild(box);
+      this.grid.appendChild(box);
     }
 
     this.initializeGrid(pairsCount);
@@ -131,40 +143,37 @@ class Game {
     });
 
     this.updateStats();
-    document.querySelector("#rejouer").style.display = "none";
-    document.querySelector("#liste_pokemons_captures").innerHTML = "";
+    this.replayButton.style.display = "none";
+    this.capturedListElement.innerHTML = "";
   }
 
   // Mise à jour des statistiques
   updateStats() {
-    document.querySelector("#stat_nombre_de_coups").textContent = this.moves;
-    document.querySelector("#stat_record_nombre_de_coups").textContent =
+    this.movesElement.textContent = this.moves;
+    this.highScoreElement.textContent =
       this.highScore === 999999 ? "N/A" : this.highScore;
 
     if (this.captured.length === this.grid.length) {
       if (this.moves < this.highScore) {
         this.highScore = this.moves;
         localStorage.setItem("highScore", this.highScore);
-        document.querySelector("#stat_record_nombre_de_coups").textContent =
-          this.highScore;
+        this.highScoreElement.textContent = this.highScore;
       }
 
-      document.querySelector("#rejouer").style.display = "block";
+      this.replayButton.style.display = "block";
     }
   }
 
   // Ajout d'un pokémon à la liste des pokémons capturés
   updateCaptured(pokemon) {
-    const list = document.querySelector(".liste_pokemons_captures");
     const pokemonImg = document.createElement("img");
     pokemonImg.src = pokemon.sprite;
-    list.appendChild(pokemonImg);
+    this.capturedListElement.appendChild(pokemonImg);
   }
 
   // Mise à jour de la liste des pokémons capturés à partir de l'état sauvegardé
   updateCapturedFromState() {
-    const list = document.querySelector(".liste_pokmeons_captures");
-    list.innerHTML = "";
+    this.capturedListElement.innerHTML = "";
     const capturedSprites = [
       ...this.captured.map((index) => this.grid[index].sprite),
     ];
@@ -172,7 +181,7 @@ class Game {
     capturedSprites.forEach((sprite) => {
       const pokemonImg = document.createElement("img");
       pokemon.src = sprite;
-      list.appendChild(pokemonImg);
+      this.capturedListElement.appendChild(pokemonImg);
     });
   }
 
@@ -229,17 +238,13 @@ class Game {
       this.setupDynamicGrid();
     }
 
-    document
-      .querySelector("#taille-grille")
-      .addEventListener("submit", (event) => {
-        event.preventDefault();
-        const pairsCount = parseInt(document.querySelector("#paires").value);
-        this.setupDynamicGrid(pairsCount);
-      });
+    this.sizeForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const pairsCount = parseInt(this.pairsInput.value);
+      this.setupDynamicGrid(pairsCount);
+    });
 
-    document
-      .querySelector("#rejouer")
-      .addEventListener("click", () => this.restartGame());
+    this.replayButton.addEventListener("click", () => this.restartGame());
   }
 }
 
