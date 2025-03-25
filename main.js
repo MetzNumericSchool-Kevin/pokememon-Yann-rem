@@ -49,7 +49,7 @@ class Game {
     this.updateStats();
   }
 
-  // Ajout d'événements au clic sur le boites
+  // Ajout d'un événement' au clic sur le boites
   setupEvents() {
     document.querySelectorAll("#grille_de_jeu .box").forEach((box) => {
       box.addEventListener("click", () => {
