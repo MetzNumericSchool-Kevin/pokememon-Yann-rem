@@ -175,7 +175,7 @@ class Game {
   updateCapturedFromState() {
     this.capturedListElement.innerHTML = "";
     const capturedSprites = [
-      ...this.captured.map((index) => this.grid[index].sprite),
+      ...new Set(this.captured.map((index) => this.grid[index].sprite)),
     ];
 
     capturedSprites.forEach((sprite) => {
@@ -208,7 +208,13 @@ class Game {
       this.moves = moves;
       this.highScore = highScore;
 
-      document.querySelectorAll("#grille_de_jeu .box").forEach((box, index) => {
+      for (let i = 0; i < this.grid.length; i++) {
+        const box = this.boxTemplate.content.cloneNode(true);
+        box.querySelector(".box").setAttribute("data-index", i);
+        this.gridElement.appendChild(box);
+      }
+
+      this.gridElement.querySelectorAll(".box").forEach((box, index) => {
         const bush = box.querySelector(".bush");
 
         if (this.captured.includes(String(index))) {
@@ -222,6 +228,7 @@ class Game {
         }
       });
 
+      this.setupEvents();
       this.updateStats();
       this.updateCapturedFromState();
       return true;
