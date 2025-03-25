@@ -53,7 +53,7 @@ class Game {
     for (let i = 0; i < totalCards; i++) {
       const box = this.boxTemplate.content.cloneNode(true);
       box.querySelector(".box").setAttribute("data-index", i);
-      this.grid.appendChild(box);
+      this.gridElement.appendChild(box);
     }
 
     this.initializeGrid(pairsCount);
@@ -122,7 +122,7 @@ class Game {
         card1.box.querySelector(".bush").style.display = "block";
         card2.box.querySelector(".bush").style.display = "block";
         this.revealedCards = [];
-      }, 2000);
+      }, 1000);
     }
 
     this.updateStats();
@@ -180,7 +180,7 @@ class Game {
 
     capturedSprites.forEach((sprite) => {
       const pokemonImg = document.createElement("img");
-      pokemon.src = sprite;
+      pokemonImg.src = sprite;
       this.capturedListElement.appendChild(pokemonImg);
     });
   }
@@ -235,13 +235,12 @@ class Game {
     await this.fetchPokemons();
 
     if (!this.loadGameState()) {
-      this.setupDynamicGrid();
+      this.setupDynamicGrid(parseInt(this.pairsInput.value));
     }
 
     this.sizeForm.addEventListener("submit", (event) => {
       event.preventDefault();
-      const pairsCount = parseInt(this.pairsInput.value);
-      this.setupDynamicGrid(pairsCount);
+      this.setupDynamicGrid(parseInt(this.pairsInput.value));
     });
 
     this.replayButton.addEventListener("click", () => this.restartGame());
