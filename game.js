@@ -47,9 +47,14 @@ class Game {
 
   // Création dynamique de la grille
   setupDynamicGrid(pairsCount) {
+    this.grid = [];
+    this.captured = [];
+    this.revealedCards = [];
+    this.moves = 0;
     this.gridElement.innerHTML = "";
-    const totalCards = pairsCount * 2;
+    this.capturedListElement.innerHTML = ""
 
+    const totalCards = pairsCount * 2;
     for (let i = 0; i < totalCards; i++) {
       const box = this.boxTemplate.content.cloneNode(true);
       box.querySelector(".box").setAttribute("data-index", i);
