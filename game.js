@@ -52,7 +52,7 @@ class Game {
     this.revealedCards = [];
     this.moves = 0;
     this.gridElement.innerHTML = "";
-    this.capturedListElement.innerHTML = ""
+    this.capturedListElement.innerHTML = "";
 
     const totalCards = pairsCount * 2;
     for (let i = 0; i < totalCards; i++) {
@@ -62,12 +62,12 @@ class Game {
     }
 
     this.initializeGrid(pairsCount);
-    this.setupEvents();
+    this.setupGridClicks();
     this.updateStats();
   }
 
   // Ajout d'un événement' au clic sur le boites
-  setupEvents() {
+  setupGridClicks() {
     document.querySelectorAll("#grille_de_jeu .box").forEach((box) => {
       box.addEventListener("click", () => {
         const index = box.getAttribute("data-index");
@@ -233,7 +233,7 @@ class Game {
         }
       });
 
-      this.setupEvents();
+      this.setupGridClicks();
       this.updateStats();
       this.updateCapturedFromState();
       return true;
